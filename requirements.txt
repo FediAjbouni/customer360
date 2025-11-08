@@ -1,0 +1,24 @@
+# Core Django
+Django==4.2.23
+djangorestframework==3.14.0
+
+# Database
+dj-database-url==2.1.0
+
+# Environment management
+python-decouple==3.8
+
+# Additional Django packages
+django-filter==23.3
+django-cors-headers==4.3.1
+
+# Development tools (optional)
+django-extensions==3.2.3
+
+# Production server (optional)
+gunicorn==21.2.0
+whitenoise==6.6.0
+
+# Database drivers (optional - uncomment as needed)
+# psycopg2-binary==2.9.7  # PostgreSQL
+# mysqlclient==2.2.0      # MySQL

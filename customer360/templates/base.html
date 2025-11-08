@@ -10,16 +10,31 @@
         <nav class="navbar navbar-default">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a style="color:black;" href="/">Home</a>
+                        <a style="color:black;" href="{% url 'index' %}">Home</a>
                     </li>
                     <li>
-                        <a  style="color:black;" href="/create">New Customer</a>
+                        <a style="color:black;" href="{% url 'create_customer' %}">New Customer</a>
                     </li>
                     <li>
-                        <a style="color:black;" href="/summary">Summary</a>
+                        <a style="color:black;" href="{% url 'summary' %}">Summary</a>
                     </li>
                 </ul>
         </nav>
+        
+        <!-- Messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
         {% block content %}
         {% endblock %}
     </body>

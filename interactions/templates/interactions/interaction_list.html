@@ -1,0 +1,191 @@
+{% extends 'customer_management/base.html' %}
+
+{% block title %}Interactions - Customer 360{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-chat-dots"></i> Interactions</h1>
+    <a href="{% url 'interactions:interaction_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Add New Interaction
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-funnel"></i> Filters</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="{{ filter_form.customer.id_for_label }}" class="form-label">Customer</label>
+                {{ filter_form.customer }}
+            </div>
+            <div class="col-md-2">
+                <label for="{{ filter_form.channel.id_for_label }}" class="form-label">Channel</label>
+                {{ filter_form.channel }}
+            </div>
+            <div class="col-md-2">
+                <label for="{{ filter_form.direction.id_for_label }}" class="form-label">Direction</label>
+                {{ filter_form.direction }}
+            </div>
+            <div class="col-md-2">
+                <label for="{{ filter_form.status.id_for_label }}" class="form-label">Status</label>
+                {{ filter_form.status }}
+            </div>
+            <div class="col-md-2">
+                <label for="{{ filter_form.date_from.id_for_label }}" class="form-label">From Date</label>
+                {{ filter_form.date_from }}
+            </div>
+            <div class="col-md-1">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_interactions }}</h4>
+                        <p class="mb-0">Total Interactions</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-chat-dots fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactions Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Interaction List</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if interactions %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Channel</th>
+                            <th>Direction</th>
+                            <th>Status</th>
+                            <th>Summary</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for interaction in interactions %}
+                        <tr>
+                            <td>
+                                <small>{{ interaction.interaction_date|date:"M d, Y" }}</small><br>
+                                <small class="text-muted">{{ interaction.interaction_date|time:"H:i" }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'customer_management:customer_detail' interaction.customer.pk %}" class="text-decoration-none">
+                                    <strong>{{ interaction.customer.name }}</strong>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ interaction.get_channel_display }}</span>
+                            </td>
+                            <td>
+                                {% if interaction.direction == 'inbound' %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-arrow-down"></i> {{ interaction.get_direction_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-arrow-up"></i> {{ interaction.get_direction_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if interaction.status == 'completed' %}
+                                    <span class="badge bg-success">{{ interaction.get_status_display }}</span>
+                                {% elif interaction.status == 'pending' %}
+                                    <span class="badge bg-warning">{{ interaction.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ interaction.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 200px;" title="{{ interaction.summary }}">
+                                    {{ interaction.summary }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'interactions:interaction_detail' interaction.pk %}" 
+                                       class="btn btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'interactions:interaction_update' interaction.pk %}" 
+                                       class="btn btn-outline-warning" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'interactions:interaction_delete' interaction.pk %}" 
+                                       class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-chat-dots display-1 text-muted"></i>
+                <h4 class="text-muted">No interactions found</h4>
+                <p class="text-muted">Start by recording your first interaction.</p>
+                <a href="{% url 'interactions:interaction_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add Interaction
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Interaction pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+            </li>
+        {% endif %}
+        
+        <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'customer_management/base.html' %}
+
+{% block title %}Delete Customer - Customer 360{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Delete Customer
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Important:</strong> This action will deactivate the customer instead of permanently deleting them.
+                    All interaction history will be preserved.
+                </div>
+                
+                <p>Are you sure you want to delete the following customer?</p>
+                
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ object.name }}</h5>
+                        <p class="card-text">
+                            <strong>Email:</strong> {{ object.email }}<br>
+                            <strong>Phone:</strong> {{ object.phone }}<br>
+                            <strong>Address:</strong> {{ object.address }}
+                        </p>
+                        {% if interaction_count > 0 %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-chat-dots"></i>
+                                This customer has <strong>{{ interaction_count }}</strong> interaction(s) on record.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <form method="post" class="mt-3">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'customer_management:customer_update' object.pk %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Yes, Delete Customer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

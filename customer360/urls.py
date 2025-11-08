@@ -15,14 +15,33 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.shortcuts import redirect
 from . import views
 
+def redirect_to_customers(request):
+    return redirect('customer_management:customer_list')
+
+def redirect_to_create(request):
+    return redirect('customer_management:customer_create')
+
+def redirect_to_summary(request):
+    return redirect('interactions:summary')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.index,name="index"),
-    path('create/',views.create_customer,name="create_customer"),
-    path('interact/<int:cid>',views.interact,name="interact"),
-    path('summary/',views.summary,name="summary"),
+    
+    # New app URLs
+    path('', include('customer_management.urls')),
+    path('interactions/', include('interactions.urls')),
+    
+    # Redirect old URLs to new structure
+    path('create/', redirect_to_create, name="old_create"),
+    path('summary/', redirect_to_summary, name="old_summary"),
+    
+    # Legacy URLs for backward compatibility
+    path('legacy/', views.index, name="legacy_index"),
+    path('legacy/create/', views.create_customer, name="legacy_create_customer"),
+    path('legacy/interact/<int:cid>/', views.interact, name="legacy_interact"),
+    path('legacy/summary/', views.summary, name="legacy_summary"),
 ]
